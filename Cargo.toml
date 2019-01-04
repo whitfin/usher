@@ -1,0 +1,17 @@
+[package]
+name = "usher"
+version = "0.1.0" # remember to update html_root_url
+authors = ["Isaac Whitfield <iw@whitfin.io>"]
+description = "Generic request routing for web services in Rust"
+repository = "https://github.com/whitfin/usher"
+keywords = ["api", "http", "routing", "web-services"]
+categories = ["data-structures", "network-programming", "web-programming"]
+readme = "README.md"
+edition = "2018"
+license = "MIT"
+
+[dependencies]
+http = "0.1"
+
+[badges]
+travis-ci = { repository = "whitfin/usher" }
