@@ -1,6 +1,6 @@
 use http::Method;
 
-use super::matcher::{RoutingMatcher, StaticMatcher};
+use super::matcher::{RoutingMatcher, SegmentParser, StaticSegmentParser};
 use super::node::RoutingNode;
 
 /// Represents a tree used to route requests.
@@ -11,23 +11,23 @@ use super::node::RoutingNode;
 #[derive(Debug)]
 pub struct RoutingTree<T> {
     root: RoutingNode<T>,
-    matchers: Vec<Box<RoutingMatcher>>,
+    parsers: Vec<Box<SegmentParser>>,
 }
 
 impl<T> RoutingTree<T> {
     /// Creates a new `RoutingTree` with default matchers.
     pub fn new() -> Self {
-        Self::new_with_matchers(vec![
-            // default literal matcher
-            Box::new(StaticMatcher),
-        ])
+        Self::with_parsers(vec![Box::new(StaticSegmentParser)])
     }
 
     /// Creates a new `RoutingTree` with provided matchers.
-    pub fn new_with_matchers(matchers: Vec<Box<RoutingMatcher>>) -> Self {
+    pub fn with_parsers(parsers: Vec<Box<SegmentParser>>) -> Self {
+        let parsed = parse_segment(&parsers, "/");
+        let parsed = parsed.expect("unparsed segment");
+
         Self {
-            matchers,
-            root: RoutingNode::new("/".to_owned()),
+            parsers,
+            root: RoutingNode::new(parsed),
         }
     }
 
@@ -39,16 +39,20 @@ impl<T> RoutingTree<T> {
             let child = current
                 .children()
                 .iter()
-                .find(|child| child.segment() == segment);
+                .find(|child| child.matcher().is_match(segment));
 
             if child.is_none() {
-                current.add_child(RoutingNode::new(segment.to_owned()));
+                let parsed = parse_segment(&self.parsers, segment);
+                let parsed = parsed.expect("unparsed segment");
+                let router = RoutingNode::new(parsed);
+
+                current.add_child(router);
             }
 
             current = current
                 .children_mut()
                 .iter_mut()
-                .find(|child| child.segment() == segment)
+                .find(|child| child.matcher().is_match(segment))
                 .unwrap();
         }
 
@@ -61,11 +65,9 @@ impl<T> RoutingTree<T> {
 
         'segment: for segment in path.split('/').filter(|s| *s != "") {
             for child in current.children() {
-                for matcher in &self.matchers {
-                    if matcher.is_match(&child.segment(), segment) {
-                        current = child;
-                        continue 'segment;
-                    }
+                if child.matcher().is_match(segment) {
+                    current = child;
+                    continue 'segment;
                 }
             }
         }
@@ -77,6 +79,15 @@ impl<T> RoutingTree<T> {
     pub fn shrink(&mut self) {
         self.root.shrink();
     }
+}
+
+/// Attempts to parse a `RoutingMatcher` based on the provided segment literal.
+///
+/// All provided parsers will be tested (in order) against the input segment to enable
+/// passing the most "specific" parsers earlier in the chain. In the case a `RoutingMatcher`
+/// is found, this function will short circuit and pass the first matcher back to the caller.
+fn parse_segment(parsers: &[Box<SegmentParser>], segment: &str) -> Option<Box<RoutingMatcher>> {
+    parsers.iter().find_map(|parser| parser.parse(segment))
 }
 
 /// Delegates a HTTP method to the `route` method in a tree.

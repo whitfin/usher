@@ -2,19 +2,28 @@ use http::Method;
 use usher::prelude::*;
 
 #[derive(Debug)]
-pub struct ParamMatcher;
-impl RoutingMatcher for ParamMatcher {
-    fn is_match(&self, base: &str, incoming: &str) -> bool {
-        &base[0..1] == ":" && incoming.len() > 0
+pub struct DynamicSegment;
+impl RoutingMatcher for DynamicSegment {
+    fn is_match(&self, _segment: &str) -> bool {
+        true
+    }
+}
+
+#[derive(Debug)]
+pub struct DynamicSegmentParser;
+impl SegmentParser for DynamicSegmentParser {
+    fn parse(&self, segment: &str) -> Option<Box<RoutingMatcher>> {
+        if &segment[0..1] == ":" {
+            return Some(Box::new(DynamicSegment));
+        }
+        None
     }
 }
 
 fn main() {
-    let mut tree: RoutingTree<()> = RoutingTree::new_with_matchers(vec![
-        // static pathing
-        Box::new(StaticMatcher),
-        // parameterized pathing
-        Box::new(ParamMatcher),
+    let mut tree: RoutingTree<()> = RoutingTree::with_parsers(vec![
+        Box::new(StaticSegmentParser),
+        Box::new(DynamicSegmentParser),
     ]);
 
     tree.insert(Method::GET, "/", ());

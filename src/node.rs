@@ -2,6 +2,8 @@ use http::Method;
 
 use std::collections::HashMap;
 
+use super::matcher::RoutingMatcher;
+
 /// Represents a node inside the main tree.
 ///
 /// Nodes contain their segment literal, any handlers associated with
@@ -9,16 +11,16 @@ use std::collections::HashMap;
 /// This structure is recursive to form a tree of nodes.
 #[derive(Debug)]
 pub struct RoutingNode<T> {
-    segment: String,
+    matcher: Box<RoutingMatcher>,
     handlers: HashMap<Method, T>,
     children: Vec<RoutingNode<T>>,
 }
 
 impl<T> RoutingNode<T> {
     /// Constructs a new `RoutingNode` from a literal.
-    pub(crate) fn new(segment: String) -> Self {
+    pub(crate) fn new(matcher: Box<RoutingMatcher>) -> Self {
         Self {
-            segment,
+            matcher,
             handlers: HashMap::new(),
             children: Vec::new(),
         }
@@ -49,9 +51,9 @@ impl<T> RoutingNode<T> {
         self.handlers.get(method)
     }
 
-    /// Retrieves the segment literal for this node.
-    pub(crate) fn segment(&self) -> &str {
-        &self.segment
+    /// Retrieves the matching struct for this node.
+    pub(crate) fn matcher(&self) -> &Box<RoutingMatcher> {
+        &self.matcher
     }
 
     /// Shrinks this node to the minimal amount of memory possible.

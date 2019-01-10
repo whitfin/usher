@@ -18,6 +18,6 @@ pub mod prelude {
     //! ```
     //!
     //! The prelude may grow over time, but it is unlikely to shrink.
-    pub use super::matcher::{RoutingMatcher, StaticMatcher};
+    pub use super::matcher::{RoutingMatcher, SegmentParser, StaticSegmentParser};
     pub use super::tree::RoutingTree;
 }
