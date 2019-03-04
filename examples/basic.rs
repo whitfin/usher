@@ -22,8 +22,8 @@ impl SegmentParser for DynamicSegmentParser {
 
 fn main() {
     let mut tree: RoutingTree<()> = RoutingTree::with_parsers(vec![
-        Box::new(StaticSegmentParser),
         Box::new(DynamicSegmentParser),
+        Box::new(StaticSegmentParser),
     ]);
 
     tree.insert(Method::GET, "/", ());
