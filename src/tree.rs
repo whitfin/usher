@@ -61,18 +61,18 @@ impl<T> RoutingTree<T> {
 
     /// Attempts to route a method/path combination to a handler in the tree.
     pub fn route(&self, method: &Method, path: &str) -> Option<&T> {
-        let mut current = &self.root;
+        let mut current = None;
 
         'segment: for segment in path.split('/').filter(|s| *s != "") {
-            for child in current.children() {
+            for child in current.unwrap_or(&self.root).children() {
                 if child.matcher().is_match(segment) {
-                    current = child;
+                    current = Some(child);
                     continue 'segment;
                 }
             }
         }
 
-        current.handler(method)
+        current.and_then(|node| node.handler(method))
     }
 
     /// Shrinks this tree to the minimal amount of memory possible.
