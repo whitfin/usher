@@ -4,6 +4,10 @@ use usher::prelude::*;
 #[derive(Debug)]
 pub struct DynamicSegment;
 impl RoutingMatcher for DynamicSegment {
+    fn capture<'a>(&self, segment: &'a str) -> Option<&'a str> {
+        Some(segment)
+    }
+
     fn is_match(&self, _segment: &str) -> bool {
         true
     }

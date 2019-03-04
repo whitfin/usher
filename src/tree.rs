@@ -59,20 +59,26 @@ impl<T> RoutingTree<T> {
         current.add_handler(&method, t);
     }
 
-    /// Attempts to route a method/path combination to a handler in the tree.
-    pub fn route(&self, method: &Method, path: &str) -> Option<&T> {
+    /// Attempts to route a method/path combination to a handler in the tree, capturing parameters.
+    pub fn route<'a>(&self, method: &Method, path: &'a str) -> Option<(&T, Vec<&'a str>)> {
         let mut current = None;
+        let mut captures = Vec::new();
 
         'segment: for segment in path.split('/').filter(|s| *s != "") {
             for child in current.unwrap_or(&self.root).children() {
-                if child.matcher().is_match(segment) {
-                    current = Some(child);
-                    continue 'segment;
+                let matcher = child.matcher();
+                if !matcher.is_match(segment) {
+                    continue;
                 }
+                if let Some(capture) = matcher.capture(segment) {
+                    captures.push(capture);
+                }
+                current = Some(child);
+                continue 'segment;
             }
         }
 
-        current.and_then(|node| node.handler(method))
+        current.and_then(|node| node.handler(method).map(|handler| (handler, captures)))
     }
 
     /// Shrinks this tree to the minimal amount of memory possible.

@@ -7,6 +7,11 @@ use std::fmt::Debug;
 /// for things like RegEx, especially when all routes will only be static
 /// (as an example).
 pub trait RoutingMatcher: Debug {
+    /// Retrieves a potential capture from a segment.
+    fn capture<'a>(&self, _segment: &'a str) -> Option<&'a str> {
+        None
+    }
+
     /// Determines whether an incoming segment is a match for a base segment.
     fn is_match(&self, segment: &str) -> bool;
 }
