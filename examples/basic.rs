@@ -2,10 +2,10 @@ use http::Method;
 use usher::prelude::*;
 
 #[derive(Debug)]
-pub struct DynamicSegment;
+pub struct DynamicSegment(String);
 impl RoutingMatcher for DynamicSegment {
-    fn capture<'a>(&self, segment: &'a str) -> Option<&'a str> {
-        Some(segment)
+    fn capture<'a>(&self, segment: &'a str) -> Option<(&str, &'a str)> {
+        Some((&self.0, segment))
     }
 
     fn is_match(&self, _segment: &str) -> bool {
@@ -17,10 +17,11 @@ impl RoutingMatcher for DynamicSegment {
 pub struct DynamicSegmentParser;
 impl SegmentParser for DynamicSegmentParser {
     fn parse(&self, segment: &str) -> Option<Box<RoutingMatcher>> {
-        if &segment[0..1] == ":" {
-            return Some(Box::new(DynamicSegment));
+        if &segment[0..1] != ":" {
+            return None;
         }
-        None
+        let name = (&segment[1..]).to_owned();
+        Some(Box::new(DynamicSegment(name)))
     }
 }
 

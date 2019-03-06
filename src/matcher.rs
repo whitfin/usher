@@ -8,7 +8,7 @@ use std::fmt::Debug;
 /// (as an example).
 pub trait RoutingMatcher: Debug {
     /// Retrieves a potential capture from a segment.
-    fn capture<'a>(&self, _segment: &'a str) -> Option<&'a str> {
+    fn capture<'a>(&self, _segment: &'a str) -> Option<(&str, &'a str)> {
         None
     }
 

@@ -60,7 +60,7 @@ impl<T> RoutingTree<T> {
     }
 
     /// Attempts to route a method/path combination to a handler in the tree, capturing parameters.
-    pub fn route<'a>(&self, method: &Method, path: &'a str) -> Option<(&T, Vec<&'a str>)> {
+    pub fn route<'a>(&self, method: &Method, path: &'a str) -> Option<(&T, Vec<(&str, &'a str)>)> {
         let mut current = None;
         let mut captures = Vec::new();
 
