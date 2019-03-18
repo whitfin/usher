@@ -1,10 +1,11 @@
-//! Generic request routing for web services in Rust.
+//! Parameterized routing for generic resources in Rust.
 #![doc(html_root_url = "https://docs.rs/usher/0.1.0")]
 
 // exposed modules
 pub mod matcher;
 pub mod node;
-pub mod tree;
+pub mod parser;
+pub mod router;
 
 // prelude module
 pub mod prelude {
@@ -18,6 +19,7 @@ pub mod prelude {
     //! ```
     //!
     //! The prelude may grow over time, but it is unlikely to shrink.
-    pub use super::matcher::{RoutingMatcher, SegmentParser, StaticSegmentParser};
-    pub use super::tree::RoutingTree;
+    pub use super::matcher::Matcher;
+    pub use super::parser::{Parser, StaticParser};
+    pub use super::router::Router;
 }

@@ -1,67 +1,74 @@
-use http::Method;
+//! Nodes to represent the internal structure of a router.
+use super::matcher::Matcher;
 
-use std::collections::HashMap;
-
-use super::matcher::RoutingMatcher;
-
-/// Represents a node inside the main tree.
+/// Node structure to represent the internal structure of a router.
 ///
-/// Nodes contain their segment literal, any handlers associated with
-/// the current leaf, and any child nodes associated with this segment.
-/// This structure is recursive to form a tree of nodes.
-#[derive(Debug)]
-pub struct RoutingNode<T> {
-    matcher: Box<RoutingMatcher>,
-    handlers: HashMap<Method, T>,
-    children: Vec<RoutingNode<T>>,
+/// A router is simply a `Node` which doesn't have any parent nodes,
+/// which allows for the recursive structure of the tree. Each
+/// `Node` can have a value of the generic type, which is the value
+/// returned when routing occurs.
+///
+/// Every `Node` also has an associated `Matcher` which is used
+/// to test for compatibility when routing (because not every node
+/// is applicable on a given segment order). This `Matcher` is
+/// automatically provided to the `Node` at creation time and is
+/// calculated by the routing system.
+///
+/// Lastly, a `Node` can have child instances to represent the
+/// recursive structure of a router. These children are stored in
+/// a `Vec` as there's currently no logical way to index them into
+/// a more suitable structure. If a `Node` has no children, the
+/// containing vector does not require any memory allocation. Any
+/// memory will be allocated lazily, and should remain minimal in
+/// most standard cases (as it depends on the allocator in use).
+pub struct Node<T> {
+    value: Option<T>,
+    matcher: Box<Matcher>,
+    children: Vec<Node<T>>,
 }
 
-impl<T> RoutingNode<T> {
-    /// Constructs a new `RoutingNode` from a literal.
-    pub(crate) fn new(matcher: Box<RoutingMatcher>) -> Self {
+impl<T> Node<T> {
+    /// Constructs a new `Node` from a literal.
+    pub(crate) fn new(matcher: Box<Matcher>) -> Self {
         Self {
             matcher,
-            handlers: HashMap::new(),
+            value: None,
             children: Vec::new(),
         }
     }
 
     /// Registers a child node inside this node.
-    pub(crate) fn add_child(&mut self, child: RoutingNode<T>) {
+    pub(crate) fn add_child(&mut self, child: Node<T>) {
+        self.children.reserve_exact(1);
         self.children.push(child);
     }
 
-    /// Registers a handler for a given method inside this node.
-    pub(crate) fn add_handler(&mut self, method: &Method, t: T) {
-        self.handlers.insert(method.to_owned(), t);
-    }
-
     /// Retrieves a reference to the children of this node.
-    pub(crate) fn children(&self) -> &[RoutingNode<T>] {
+    pub(crate) fn children(&self) -> &[Node<T>] {
         &self.children
     }
 
     /// Retrieves a mutable reference to the children of this node.
-    pub(crate) fn children_mut(&mut self) -> &mut [RoutingNode<T>] {
+    pub(crate) fn children_mut(&mut self) -> &mut [Node<T>] {
         &mut self.children
     }
 
-    /// Retrieves a potential handler associated with the provided method.
-    pub(crate) fn handler(&self, method: &Method) -> Option<&T> {
-        self.handlers.get(method)
-    }
-
     /// Retrieves the matching struct for this node.
-    pub(crate) fn matcher(&self) -> &Box<RoutingMatcher> {
+    pub(crate) fn matcher(&self) -> &Box<Matcher> {
         &self.matcher
     }
 
-    /// Shrinks this node to the minimal amount of memory possible.
-    pub(crate) fn shrink(&mut self) {
-        self.children.shrink_to_fit();
-        self.handlers.shrink_to_fit();
-        for child in &mut self.children {
-            child.shrink();
-        }
+    /// Updates the inner value of this routing
+    pub(crate) fn update<F>(&mut self, f: F)
+    where
+        F: FnOnce(Option<T>) -> T,
+    {
+        let t = f(self.value.take());
+        self.value.replace(t);
+    }
+
+    /// Retrieves a potential handler associated with the provided method.
+    pub(crate) fn value(&self) -> Option<&T> {
+        self.value.as_ref()
     }
 }

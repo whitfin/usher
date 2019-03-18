@@ -1,4 +1,7 @@
-use std::fmt::Debug;
+//! Matchers used to compare against incoming segments.
+//!
+//! Values of type `Matcher` are stored inside a tree and used to match
+//! against incoming segments in order to walk through the tree correctly.
 
 /// Matching trait to enable generic route matching algorithms.
 ///
@@ -6,7 +9,7 @@ use std::fmt::Debug;
 /// on the needs of the end developer. In many cases it's wasteful to check
 /// for things like RegEx, especially when all routes will only be static
 /// (as an example).
-pub trait RoutingMatcher: Debug {
+pub trait Matcher {
     /// Retrieves a potential capture from a segment.
     fn capture<'a>(&self, _segment: &'a str) -> Option<(&str, &'a str)> {
         None
@@ -16,56 +19,39 @@ pub trait RoutingMatcher: Debug {
     fn is_match(&self, segment: &str) -> bool;
 }
 
-/// Parsing trait to enable conversion from literals into matchers.
+/// Blanket implementation of `Matcher` for pure functions.
 ///
-/// This is used to run through a cascading parsing flow to enable custom
-/// matchers being implemented. This trait enables all segment matching to
-/// be determined at creation time to avoid any costs at routing time.
-pub trait SegmentParser: Debug {
-    /// Attempts to parse a `RoutingMatcher` out of a segment.
-    fn parse(&self, segment: &str) -> Option<Box<RoutingMatcher>>;
-}
-
-/// Segment parser to generate static route matchers.
-#[derive(Debug)]
-pub struct StaticSegmentParser;
-
-/// `SegmentParser` implementation for the static matcher.
-impl SegmentParser for StaticSegmentParser {
-    /// Parses out a static matcher from a segment literal.
-    ///
-    /// Note that although this returns a result, it will never fail
-    /// as every string literal can be treated as a static matcher.
-    fn parse(&self, segment: &str) -> Option<Box<RoutingMatcher>> {
-        Some(Box::new(StaticMatcher {
-            inner: segment.to_owned(),
-        }))
+/// Pure functions are assumed to not have a capture group, as there's no
+/// way to directly name them at this point (unless derived from the input).
+impl<F> Matcher for F
+where
+    F: Fn(&str) -> bool,
+{
+    /// Determines whether an incoming segment is a match for a base segment.
+    fn is_match(&self, segment: &str) -> bool {
+        self(segment)
     }
 }
 
 /// Static path segment matcher.
 ///
-/// This struct is constructed via the `StaticSegmentParser` and compares
+/// This struct is constructed via the `StaticParser` and compares
 /// incoming segments directly against the internal static `String` segment.
 #[derive(Debug)]
 pub struct StaticMatcher {
     inner: String,
 }
 
-impl RoutingMatcher for StaticMatcher {
-    /// Compares an incoming segment against a literal base segment.
-    fn is_match(&self, segment: &str) -> bool {
-        &self.inner == segment
+impl StaticMatcher {
+    /// Constructs a new `StaticMatcher` from a segment.
+    pub fn new<S: Into<String>>(s: S) -> Self {
+        Self { inner: s.into() }
     }
 }
 
-/// Blanket implementation of `SegmentParser` for pure functions.
-impl<F> SegmentParser for F
-where
-    F: Fn(&str) -> Option<Box<RoutingMatcher>> + Debug,
-{
-    /// Attempts to parse a `RoutingMatcher` out of a segment.
-    fn parse(&self, segment: &str) -> Option<Box<RoutingMatcher>> {
-        self(segment)
+impl Matcher for StaticMatcher {
+    /// Compares an incoming segment against a literal base segment.
+    fn is_match(&self, segment: &str) -> bool {
+        &self.inner == segment
     }
 }
