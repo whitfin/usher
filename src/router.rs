@@ -51,7 +51,7 @@ impl<T> Router<T> {
         self.update(path, |_| t)
     }
 
-    /// Attempts to route a method/path combination.
+    /// Attempts to route a path to a leaf value.
     ///
     /// This function will also capture any parameters involved in routing, into a
     /// `Vec` which is returned inside the containing `Option`. Each capture consists
