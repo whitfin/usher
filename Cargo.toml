@@ -12,3 +12,14 @@ license = "MIT"
 
 [badges]
 travis-ci = { repository = "whitfin/usher" }
+
+[features]
+default = []
+web = ["http"]
+
+[dependencies]
+http = { version = "0.1", optional = true }
+
+[[example]]
+name = "http"
+required-features = ["web"]

@@ -2,6 +2,7 @@
 #![doc(html_root_url = "https://docs.rs/usher/0.1.0")]
 
 // exposed modules
+pub mod ext;
 pub mod matcher;
 pub mod node;
 pub mod parser;
