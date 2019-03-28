@@ -26,6 +26,25 @@ do my best to keep this to a minimum to reduce any churn involved. One choice
 that is perhaps going to change is the API around using non-filesystem based
 pathing.
 
+### Getting Started
+
+Usher is available on [crates.io](https://crates.io/crates/usher). The easiest
+way to use it is to add an entry to your `Cargo.toml` defining the dependency:
+
+```toml
+[dependencies]
+usher = "0.1"
+```
+
+If you require any of the Usher extensions, you can opt into them by setting the
+feature flags in your dependency configuration:
+
+```toml
+usher = { version = "0.1", features = ["web"] }
+```
+
+You can find the available extensions in the documentation.
+
 ### Basic Usage
 
 The construction of a tree is quite simple, depending on what your desired outcome
@@ -201,7 +220,6 @@ a dynamic segment):
   |   |    |
   S   S    D
 ```
-
 
 Please note that the order the parsers are provided is very important; you should
 place the most "specific" parsers first as they are tested in order. If you placed

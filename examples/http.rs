@@ -56,7 +56,6 @@ impl Parser for DynamicParser {
 
 fn main() {
     let mut router: HttpRouter<()> = HttpRouter::new(vec![
-        // dynamic `:id` patterns
         Box::new(DynamicParser),
         Box::new(StaticParser),
     ]);
