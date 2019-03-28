@@ -3,8 +3,8 @@ use usher::ext::http::HttpRouter;
 use usher::prelude::*;
 
 #[derive(Debug)]
-pub struct DynamicSegment(String);
-impl Matcher for DynamicSegment {
+pub struct DynamicMatcher(String);
+impl Matcher for DynamicMatcher {
     fn capture<'a>(&self, segment: &'a str) -> Option<(&str, &'a str)> {
         Some((&self.0, segment))
     }
@@ -22,7 +22,7 @@ impl Parser for DynamicParser {
             return None;
         }
         let name = (&segment[1..]).to_owned();
-        Some(Box::new(DynamicSegment(name)))
+        Some(Box::new(DynamicMatcher(name)))
     }
 }
 
