@@ -28,7 +28,6 @@ where
 }
 
 /// Segment parser to generate static route matchers.
-#[derive(Debug)]
 pub struct StaticParser;
 
 /// `Parser` implementation for the static matcher.

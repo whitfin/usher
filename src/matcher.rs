@@ -35,9 +35,8 @@ where
 
 /// Static path segment matcher.
 ///
-/// This struct is constructed via the `StaticParser` and compares
-/// incoming segments directly against the internal static `String` segment.
-#[derive(Debug)]
+/// This struct is constructed via the `StaticParser` and compares ncoming
+/// segments directly against the internal static `String` segment.
 pub struct StaticMatcher {
     inner: String,
 }
