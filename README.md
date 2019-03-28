@@ -1,4 +1,4 @@
-# usher
+# Usher
 
 Usher provides an easy way to construct parameterized routing trees in Rust.
 
@@ -149,7 +149,6 @@ like this:
 pub struct DynamicParser;
 
 impl Parser for DynamicParser {
-
     /// Attempts to parse a segment into a corresponding `Matcher`.
     ///
     /// As a dynamic segment is determined by the pattern `:.+`, we check the first
