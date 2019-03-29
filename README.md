@@ -9,18 +9,13 @@ by the developer using a simple set of traits, allowing for customization in
 the routing algorithm itself. This provides easy support for various contexts
 in which routing may be used.
 
-Usher also comes with several extensions based around certain domains that
-routing may be convenient alongside. These extensions are all off by default
-to remove build overhead, but can be opted in easily via Cargo features. One
-such example is the `web` feature which provides the `HttpRouter` struct to
-replicate the routing of web requests, where there is an additional HTTP method
-rather than a standard terminal node.
-
-This project was born out of a personal need for something small to sit on top
-of [Hyper](https://hyper.rs/), without having to depend on an entire framework.
-Over time it became clear that it provided utility outside of just the HTTP realm,
-and so the API was adapted to become generic, with the HTTP behaviour moving into
-the HTTP extension.
+This project was born of a personal need for something small to sit on top of
+[Hyper](https://hyper.rs/), without having to work with a whole framework. Over
+time it became clear that it provides utility outside of the HTTP realm, and so
+the API was adapted to become more generic. As such, Usher provides several
+"extensions" based on certain domains which essentially provide sugar over a
+typical router. These extensions are all off by default, but can easily be set
+as enabled via Cargo features.
 
 Prior to v1.0 you can expect the API to receive some changes, although I will
 do my best to keep this to a minimum to reduce any churn involved. One choice
