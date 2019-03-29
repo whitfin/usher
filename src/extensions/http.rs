@@ -18,17 +18,20 @@ use crate::router::Router;
 /// Almost all internals of this router are controlled by the usual `Router`,
 /// with this structure simply providing a more HTTP friendly API for ergonomics.
 ///
-/// To construct a router this way, HTTP verbs must be used as naturally there must
-/// be a verb associated with each request. There is currently no way to match any
-/// verb, although this will be improved at some point in future.
+/// To construct a router this way, HTTP verbs must be used as there must be a
+/// verb associated with each request. There is currently no way to match any
+/// verb, although this will potentially be improved at some point in future.
 pub struct HttpRouter<T> {
     router: Router<HashMap<Method, T>>,
 }
 
 /// Delegates a HTTP method to the `route` method in a router.
 macro_rules! http_delegate {
-    ($name:ident, $method:expr) => {
+    ($name:ident, $method:expr, $smethod:expr) => {
         #[inline(always)]
+        #[doc = "Registers a handler for the `"]
+        #[doc = $smethod]
+        #[doc = "` HTTP method."]
         pub fn $name(&mut self, path: &str, t: T) {
             self.insert($method, path, t)
         }
@@ -44,15 +47,15 @@ impl<T> HttpRouter<T> {
     }
 
     // Automatic HTTP method delegates.
-    http_delegate!(connect, Method::CONNECT);
-    http_delegate!(delete, Method::DELETE);
-    http_delegate!(get, Method::GET);
-    http_delegate!(head, Method::HEAD);
-    http_delegate!(options, Method::OPTIONS);
-    http_delegate!(patch, Method::PATCH);
-    http_delegate!(post, Method::POST);
-    http_delegate!(put, Method::PUT);
-    http_delegate!(trace, Method::TRACE);
+    http_delegate!(connect, Method::CONNECT, "CONNECT");
+    http_delegate!(delete, Method::DELETE, "DELETE");
+    http_delegate!(get, Method::GET, "GET");
+    http_delegate!(head, Method::HEAD, "HEAD");
+    http_delegate!(options, Method::OPTIONS, "OPTIONS");
+    http_delegate!(patch, Method::PATCH, "PATCH");
+    http_delegate!(post, Method::POST, "POST");
+    http_delegate!(put, Method::PUT, "PUT");
+    http_delegate!(trace, Method::TRACE, "TRACE");
 
     /// Inserts a route/handler pair for the provided method and path.
     fn insert(&mut self, method: Method, path: &str, t: T) {
