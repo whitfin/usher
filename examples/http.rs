@@ -1,5 +1,5 @@
 use http::Method;
-use usher::ext::http::HttpRouter;
+use usher::http::HttpRouter;
 use usher::prelude::*;
 
 /// A `Matcher` type used to match against dynamic segments.
@@ -16,7 +16,7 @@ impl Matcher for DynamicMatcher {
     /// In the pattern we described above the entire value becomes the capture,
     /// so we return a tuple of `("id", <segment>)` to represent the capture.
     fn capture<'a>(&self, segment: &'a str) -> Option<(&str, &'a str)> {
-        Some((&self.0, segment))
+        Some((&self.inner, segment))
     }
 
     /// Determines if this matcher matches the incoming segment.
