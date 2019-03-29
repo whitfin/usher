@@ -1,4 +1,5 @@
 # Usher
+[![Crates.io](https://img.shields.io/crates/v/usher.svg)](https://crates.io/crates/usher) [![Build Status](https://img.shields.io/travis/whitfin/usher.svg)](https://travis-ci.org/whitfin/usher)
 
 Usher provides an easy way to construct parameterized routing trees in Rust.
 
@@ -83,6 +84,9 @@ the tree and retrieving the value associated with the path. The return type of t
 to the generic value provided (`"1"`, etc), and the `Vec` including a set of any
 parameters found during routing. In the case of no parameters, this vector will be
 empty (as is the case above).
+
+For usage based around extensions (such as HTTP), please see the documentation for
+the module containing it - or visit the examples directory for actual usage.
 
 ### Advanced Usage
 
