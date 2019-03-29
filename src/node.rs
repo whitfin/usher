@@ -54,8 +54,8 @@ impl<T> Node<T> {
     }
 
     /// Retrieves the matching struct for this node.
-    pub(crate) fn matcher(&self) -> &Box<Matcher> {
-        &self.matcher
+    pub(crate) fn matcher(&self) -> &dyn Matcher {
+        &*self.matcher
     }
 
     /// Updates the inner value of this routing

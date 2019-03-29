@@ -4,9 +4,7 @@ fn main() {
     // First we construct our `Router` using a set of parsers. Fortunately for
     // this example, Usher includes the `StaticParser` which uses basic string
     // matching to determine whether a segment in the path matches.
-    let mut router: Router<String> = Router::new(vec![
-        Box::new(StaticParser),
-    ]);
+    let mut router: Router<String> = Router::new(vec![Box::new(StaticParser)]);
 
     // Then we insert our routes; in this case we're going to store the numbers
     // 1, 2 and 3, against their equivalent name in typed English (with a "/"

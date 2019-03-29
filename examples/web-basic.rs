@@ -7,7 +7,7 @@ use usher::prelude::*;
 /// The internal value here is the name of the path parameter (based on the
 /// example talked through above, this would be the _owned_ `String` of `"id"`).
 pub struct DynamicMatcher {
-    inner: String
+    inner: String,
 }
 
 impl Matcher for DynamicMatcher {
@@ -47,7 +47,7 @@ impl Parser for DynamicParser {
 
         let field = &segment[1..];
         let matcher = DynamicMatcher {
-            inner: field.to_owned()
+            inner: field.to_owned(),
         };
 
         Some(Box::new(matcher))
@@ -55,17 +55,20 @@ impl Parser for DynamicParser {
 }
 
 fn main() {
-    let mut router: HttpRouter<()> = HttpRouter::new(vec![
-        Box::new(DynamicParser),
-        Box::new(StaticParser),
-    ]);
+    // Just like in a normal Router, we provide our parsers at startup.
+    let mut router: HttpRouter<()> =
+        HttpRouter::new(vec![Box::new(DynamicParser), Box::new(StaticParser)]);
 
+    // Then we insert some HTTP routes (note the HTTP method being used as
+    // the method name for insertion).
     router.get("/", ());
     router.get("/status", ());
     router.get("/api/v1/user", ());
     router.post("/api/v1/user", ());
     router.put("/api/v1/user/:id", ());
 
+    // Fetch some HTTP handlers based on the method/path combinations. If
+    // the path matches, but the method does not, no handler will be found.
     println!("GET /: {:?}", router.handler(&Method::GET, "/"));
     println!("GET /status: {:?}", router.handler(&Method::GET, "/status"));
     println!("GET /api: {:?}", router.handler(&Method::GET, "/api"));

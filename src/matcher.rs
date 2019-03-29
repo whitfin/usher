@@ -51,6 +51,6 @@ impl StaticMatcher {
 impl Matcher for StaticMatcher {
     /// Compares an incoming segment against a literal base segment.
     fn is_match(&self, segment: &str) -> bool {
-        &self.inner == segment
+        self.inner == segment
     }
 }
