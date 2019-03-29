@@ -7,9 +7,9 @@ pub mod node;
 pub mod parser;
 pub mod router;
 
-// flagged modules
-mod ext;
-pub use ext::*;
+// lift extensions
+mod extensions;
+pub use extensions::*;
 
 // prelude module
 pub mod prelude {

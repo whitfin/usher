@@ -21,5 +21,5 @@ web = ["http"]
 http = { version = "0.1", optional = true }
 
 [[example]]
-name = "http"
+name = "web-basic"
 required-features = ["web"]

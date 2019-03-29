@@ -4,6 +4,8 @@
 //! generic `Router` in a more HTTP appropriate way. Rather than the
 //! typical insertion functions, this router exposes HTTP verbs as the
 //! names of functions to provide a simple API for mapping HTTP requests.
+//!
+//! To activate this extension, use the `"web"` Cargo feature.
 use http::Method;
 
 use std::collections::HashMap;
