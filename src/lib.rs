@@ -24,6 +24,6 @@ pub mod prelude {
     //!
     //! The prelude may grow over time, but it is unlikely to shrink.
     pub use super::matcher::Matcher;
-    pub use super::parser::{Parser, StaticParser};
+    pub use super::parser::{DynamicParser, Parser, StaticParser};
     pub use super::router::Router;
 }

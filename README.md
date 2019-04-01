@@ -20,7 +20,8 @@ as enabled via Cargo features.
 Prior to v1.0 you can expect the API to receive some changes, although I will
 do my best to keep this to a minimum to reduce any churn involved. One choice
 that is perhaps going to change is the API around using non-filesystem based
-pathing.
+pathing. Other than that expect changes as optimizations (and the likely API
+refactoring associated with them) still need to be fully investigated.
 
 ### Getting Started
 
@@ -190,9 +191,47 @@ impl Parser for DynamicParser {
 }
 ```
 
-This is fairly straightforward and shouldn't need much further explanation. An
-allocation is required due to the trait typing, but as this is only ever called
-at router creation time there really isn't much cost for this.
+One of the nice things about splitting the traits is that you can switch up the
+syntax easily. Although both `DynamicMatcher` and `DynamicParser` are included
+in Usher, you might want to use a different syntax. One other example of syntax
+for parameters (I think in the Java realm) is `{id}`. To accomodate this case,
+you only have to write a new `Parser` implementation; the existing `Matcher`
+struct already works!
+
+```rust
+/// A customer `Parser` type used to parse out `DynamicMatcher` values.
+pub struct CustomDynamicParser;
+
+impl Parser for CustomDynamicParser {
+    /// Attempts to parse a segment into a corresponding `Matcher`.
+    ///
+    /// This will match segments based on `{id}` syntax, rather than `:id`. We have
+    /// to check the end characters, and pass back the something in the middle!
+    fn parse(&self, segment: &str) -> Option<Box<Matcher>> {
+        // has to start with "{"
+        if &segment[0..1] != "{" {
+            return None;
+        }
+
+        // has to end with "}"
+        if &segment[(len - 1)..] != "}" {
+            return None;
+        }
+
+        // so 1..(len - 1) trim the brackets
+        let field = &segment[1..(len - 1)];
+        let matcher = DynamicMatcher::new(field);
+
+        // wrap it up!
+        Some(Box::new(matcher))
+    }
+}
+```
+
+Of course, this also makes it trivial to match _either_ of the two forms shown
+above. You can attach both parsers to your tree at startup, and it will allow
+for both `:id` and `{id}`. This flexibility can be definitely be useful when
+writing more involved frameworks, using Usher as the underlying routing layer.
 
 #### Configuration
 
