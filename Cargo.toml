@@ -20,6 +20,14 @@ web = ["http"]
 [dependencies]
 http = { version = "0.1", optional = true }
 
+[dev-dependencies]
+futures = "0.1"
+hyper =  "0.12"
+
 [[example]]
 name = "web-basic"
+required-features = ["web"]
+
+[[example]]
+name = "web-hyper"
 required-features = ["web"]
