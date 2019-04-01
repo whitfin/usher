@@ -37,10 +37,7 @@ impl Parser for StaticParser {
     /// Note that although this returns a result, it will never fail
     /// as every string literal can be treated as a static matcher.
     fn parse(&self, segment: &str) -> Option<Box<Matcher>> {
-        let field = &segment[1..];
-        let matcher = StaticMatcher::new(field);
-
-        Some(Box::new(matcher))
+        Some(Box::new(StaticMatcher::new(segment)))
     }
 }
 
