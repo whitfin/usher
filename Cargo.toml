@@ -29,5 +29,9 @@ name = "web-basic"
 required-features = ["web"]
 
 [[example]]
-name = "web-hyper"
+name = "web-hyper-async"
+required-features = ["web"]
+
+[[example]]
+name = "web-hyper-sync"
 required-features = ["web"]

@@ -5,20 +5,11 @@ use hyper::{Body, Request, Response, Server, StatusCode};
 use usher::http::HttpRouter;
 use usher::prelude::*;
 
-/// This signature is borrowed from the HYper "echo" example codebase.
+/// This signature is borrowed from the Hyper "echo" example codebase.
 type BoxFut = Box<Future<Item = Response<Body>, Error = hyper::Error> + Send>;
-type Handle = Box<Fn(Request<Body>, Vec<(&str, &str)>) -> BoxFut + Send + Sync>;
 
-/// Constructs a `Response<Body>` based on the incoming path name.
-fn echo(_req: Request<Body>, params: Vec<(&str, &str)>) -> BoxFut {
-    let param = params[0];
-    let value = param.1.to_string();
-
-    let body = format!("Hello, {}!\n", value).into();
-    let resp = Response::new(body);
-
-    Box::new(future::ok(resp))
-}
+/// Represents a boxed function which receives a request/params and returns a response future.
+type Callee = Box<Fn(Request<Body>, Vec<(&str, &str)>) -> BoxFut + Send + Sync>;
 
 fn main() {
     // Create our address to bind to, localhost:3000
@@ -28,13 +19,22 @@ fn main() {
     let server = Server::bind(&addr)
         .serve(|| {
             // Just like in a normal Router, we provide our parsers at startup.
-            let mut router: HttpRouter<Handle> =
+            let mut router: HttpRouter<Callee> =
                 HttpRouter::new(vec![Box::new(DynamicParser), Box::new(StaticParser)]);
 
-            // This will echo the provided name back to the caller, by mounting
-            // the echo() function on the `/:name` path. The name will then be
-            // provided to the echo() function in the actual service function.
-            router.get("/:name", Box::new(echo));
+            // This will echo the provided name back to the caller.
+            router.get(
+                "/:name",
+                Box::new(|_req, params| {
+                    let param = params[0];
+                    let value = param.1.to_string();
+
+                    let body = format!("Hello, {}!\n", value).into();
+                    let resp = Response::new(body);
+
+                    Box::new(future::ok(resp))
+                }),
+            );
 
             // Construct a Hyper service from a function which turns a request
             // into an asynchronous response (which comes from echo()).
