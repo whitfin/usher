@@ -14,6 +14,9 @@ pub type Captures<'a> = Vec<Capture<'a>>;
 ///
 /// This function uses the provided path and captures to locate a value set against
 /// the provided name. If multiple values exist, only the first value will be found.
+///
+/// This function will panic if the bounds provided are invalid for the provided path,
+/// although this should never happen in reality unless you're mocking captures.
 #[inline]
 pub fn find_capture<'a, 'p>(path: &'p str, capt: &'a Captures<'a>, name: &str) -> Option<&'p str> {
     capt.iter()
