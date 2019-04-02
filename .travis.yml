@@ -42,6 +42,13 @@ matrix:
         - rustup component add rustfmt
         - cargo fmt --all --all-features -- --check
 
+    - # Test coverage.
+    - rust: nightly
+      os: linux
+      script:
+        - cargo install cargo-tarpaulin
+        - cargo tarpaulin --all --all-features --ignore-tests -o Stdout
+
 # Cargo package caching.
 cache:
   cargo: true

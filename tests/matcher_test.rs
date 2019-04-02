@@ -22,4 +22,15 @@ pub mod matcher {
         assert_eq!(matcher.capture("value"), Some(("field", (0, 5))));
         assert_eq!(matcher.capture("not-value"), Some(("field", (0, 9))));
     }
+
+    #[test]
+    fn closure_matching() {
+        let matcher = |input: &str| input == "value";
+
+        assert_eq!(matcher.is_match("value"), true);
+        assert_eq!(matcher.is_match("not-value"), false);
+
+        assert_eq!(matcher.capture("value"), None);
+        assert_eq!(matcher.capture("not-value"), None);
+    }
 }
