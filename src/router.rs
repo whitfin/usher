@@ -6,6 +6,7 @@
 //! a generic tree structure). The structures in this module can be used
 //! directly, but would typically provide more value as the underlying
 //! routing for more domain oriented structures.
+use crate::capture::Captures;
 use crate::matcher::Matcher;
 use crate::node::Node;
 use crate::parser::Parser;
@@ -55,14 +56,21 @@ impl<T> Router<T> {
     ///
     /// This function will also capture any parameters involved in routing, into a
     /// `Vec` which is returned inside the containing `Option`. Each capture consists
-    /// of a name and value, to help identify the matched parameter. Whilst this is
-    /// easily determined as the vector is ordered, it's helpful for those who wish
-    /// to turn captures into a map-like structure afterward.
+    /// of a name and bounds of a value, to help identify the matched parameter. Whilst
+    /// this is easily determined as the vector is ordered, it's helpful for those who
+    /// wish to turn captures into a map-like structure afterward.
+    ///
+    /// Index bounds are used over path references to avoid lifetime requirements on
+    /// the path itself, which can cause problems when working in certain contexts. At
+    /// some point in future, Usher will provide APIs to turn these index captures into
+    /// friendlier containers - but as this is the lowest cost for a default, it makes
+    /// sense for now.
     ///
     /// If a route does not require any parameters, this vector is still returned but
     /// is empty. This isn't a big deal; a `Vec` will only allocate memory when you
     /// first push something into it in most cases, so the performance hit is minimal.
-    pub fn lookup<'a>(&self, path: &'a str) -> Option<(&T, Vec<(&str, &'a str)>)> {
+    pub fn lookup<'a>(&'a self, path: &str) -> Option<(&T, Captures<'a>)> {
+        let offset = path.as_ptr() as usize;
         let mut current = None;
         let mut captures = Vec::new();
 
@@ -77,8 +85,14 @@ impl<T> Router<T> {
                 break;
             }
 
-            if let Some(capture) = current.unwrap().matcher().capture(segment) {
-                captures.push(capture);
+            let matcher = current.unwrap().matcher();
+            let capture = matcher.capture(segment);
+
+            if let Some((name, (start, end))) = capture {
+                let ptr = segment.as_ptr() as usize - offset;
+                let val = (ptr + start, ptr + end);
+
+                captures.push((name, val));
             }
         }
 

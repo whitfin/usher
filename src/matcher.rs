@@ -2,6 +2,7 @@
 //!
 //! Values of type `Matcher` are stored inside a tree and used to match
 //! against incoming segments in order to walk through the tree correctly.
+use crate::capture::Capture;
 
 /// Matching trait to enable generic route matching algorithms.
 ///
@@ -11,7 +12,7 @@
 /// (as an example).
 pub trait Matcher: Send + Sync {
     /// Retrieves a potential capture from a segment.
-    fn capture<'a>(&self, _segment: &'a str) -> Option<(&str, &'a str)> {
+    fn capture<'a>(&'a self, _segment: &str) -> Option<Capture<'a>> {
         None
     }
 
@@ -72,8 +73,8 @@ impl DynamicMatcher {
 
 impl Matcher for DynamicMatcher {
     /// Determines if there is a capture for the incoming segment.
-    fn capture<'a>(&self, segment: &'a str) -> Option<(&str, &'a str)> {
-        Some((&self.inner, segment))
+    fn capture<'a>(&'a self, segment: &str) -> Option<Capture<'a>> {
+        Some((&self.inner, (0, segment.len())))
     }
 
     /// Determines if this matcher matches the incoming segment.

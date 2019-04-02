@@ -10,6 +10,7 @@ use http::Method;
 
 use std::collections::HashMap;
 
+use crate::capture::Captures;
 use crate::parser::Parser;
 use crate::router::Router;
 
@@ -73,11 +74,7 @@ impl<T> HttpRouter<T> {
     /// be returned - along with any captures found during matching. If the
     /// path does not exist, or the method is not available on the path, a
     /// `None` value will be returned and a handler will not be found.
-    pub fn handler<'a>(
-        &self,
-        method: &Method,
-        path: &'a str,
-    ) -> Option<(&T, Vec<(&str, &'a str)>)> {
+    pub fn handler<'a>(&'a self, method: &Method, path: &str) -> Option<(&T, Captures<'a>)> {
         // look for the node in the router based on the path
         self.router.lookup(path).and_then(|(node, captures)| {
             // unpack the method and map the handler back directly

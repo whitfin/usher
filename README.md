@@ -76,10 +76,10 @@ fn main() {
 
 This will route exactly as it looks; matching each static segment provided against
 the tree and retrieving the value associated with the path. The return type of the
-`lookup(path)` function is `Option<(&T, Vec<(&str, &str)>)>`, with `&T` referring
-to the generic value provided (`"1"`, etc), and the `Vec` including a set of any
-parameters found during routing. In the case of no parameters, this vector will be
-empty (as is the case above).
+`lookup(path)` function is `Option<(&T, Vec<(&str, (usize, usize)>)>`, with `&T`
+referring to the generic value provided (`"1"`, etc), and the `Vec` including a set
+of any parameters found during routing. In the case of no parameters, this vector
+will be empty (as is the case above).
 
 For usage based around extensions (such as HTTP), please see the documentation for
 the module containing it - or visit the examples directory for actual usage.
@@ -127,9 +127,9 @@ impl Matcher for DynamicMatcher {
     /// Determines if there is a capture for the incoming segment.
     ///
     /// In the pattern we described above the entire value becomes the capture,
-    /// so we return a tuple of `("id", <segment>)` to represent the capture.
-    fn capture<'a>(&self, segment: &'a str) -> Option<(&str, &'a str)> {
-        Some((&self.inner, segment))
+    /// so we return a tuple of `("id", (start, end))` to represent the capture.
+    fn capture(&self, segment: &str) -> Option<(&str, (usize, usize))> {
+        Some((&self.inner, (0, segment.len())))
     }
 
     /// Determines if this matcher matches the incoming segment.
