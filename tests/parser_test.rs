@@ -15,10 +15,10 @@ pub mod parser {
 
     #[test]
     fn closure_parsing() {
-        let parser = |input: &str| -> Option<Box<Matcher>> {
-            // just generate a static match directly
-            Some(Box::new(StaticMatcher::new(input)))
-        };
-        assert!(parser.parse("anything").is_some());
+        assert!(create_static_matcher.parse("anything").is_some());
+    }
+
+    fn create_static_matcher(input: &str) -> Option<Box<Matcher>> {
+        Some(Box::new(StaticMatcher::new(input)))
     }
 }
