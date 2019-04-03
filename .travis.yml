@@ -47,7 +47,7 @@ matrix:
       os: linux
       script:
         - cargo install cargo-tarpaulin
-        - cargo tarpaulin --all --all-features --ignore-tests -o Stdout
+        - cargo tarpaulin --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
 
 # Cargo package caching.
 cache:

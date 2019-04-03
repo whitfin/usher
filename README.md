@@ -1,5 +1,7 @@
 # Usher
-[![Crates.io](https://img.shields.io/crates/v/usher.svg)](https://crates.io/crates/usher) [![Build Status](https://img.shields.io/travis/whitfin/usher.svg)](https://travis-ci.org/whitfin/usher)
+[![Crates.io](https://img.shields.io/crates/v/usher.svg)](https://crates.io/crates/usher)
+[![Build Status](https://img.shields.io/travis/whitfin/usher.svg)](https://travis-ci.org/whitfin/usher)
+[![Coverage Status](https://img.shields.io/coveralls/github/whitfin/usher.svg)](https://coveralls.io/github/whitfin/usher)
 
 Usher provides an easy way to construct parameterized routing trees in Rust.
 
