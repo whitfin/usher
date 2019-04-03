@@ -40,7 +40,7 @@ matrix:
       os: linux
       script:
         - rustup component add rustfmt
-        - cargo fmt --all --all-features -- --check
+        - cargo fmt --all -- --check
 
     - # Test coverage.
     - rust: nightly
