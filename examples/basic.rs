@@ -15,7 +15,7 @@ fn main() {
 
     // Finally we'll just do a lookup on each path, as well as the a path which
     // doesn't match ("/"), just to demonstrate what the return types look like.
-    for path in vec!["/", "/one", "/two", "/three"] {
+    for path in &["/", "/one", "/two", "/three"] {
         println!("{}: {:?}", path, router.lookup(path));
     }
 }

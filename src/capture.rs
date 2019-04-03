@@ -9,6 +9,7 @@ pub type Capture<'a> = (&'a str, (usize, usize));
 
 /// Alias type for a set of multiple `Capture` values.
 pub type Captures<'a> = Vec<Capture<'a>>;
+pub type CapturesRef<'a> = &'a [Capture<'a>];
 
 /// Retrieves a potential captured value from a parameter set by name.
 ///
@@ -18,7 +19,7 @@ pub type Captures<'a> = Vec<Capture<'a>>;
 /// This function will panic if the bounds provided are invalid for the provided path,
 /// although this should never happen in reality unless you're mocking captures.
 #[inline]
-pub fn find_capture<'a, 'p>(path: &'p str, capt: &'a Captures<'a>, name: &str) -> Option<&'p str> {
+pub fn find_capture<'a, 'p>(path: &'p str, capt: CapturesRef<'a>, name: &str) -> Option<&'p str> {
     capt.iter()
         .find(|(n, _)| *n == name)
         .map(|(_, bounds)| &path[(bounds.0)..(bounds.1)])
