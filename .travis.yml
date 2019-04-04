@@ -7,11 +7,19 @@ os:
   - osx
   - windows
 
+# Services listing.
+services:
+  - docker
+
 # Version matrix.
 rust:
   - stable
   - beta
   - nightly
+
+# Cargo caching.
+cache:
+  cargo: true
 
 # Custom scripts.
 script:
@@ -46,9 +54,9 @@ matrix:
     - rust: nightly
       os: linux
       script:
-        - cargo install cargo-tarpaulin
-        - cargo tarpaulin --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
-
-# Cargo package caching.
-cache:
-  cargo: true
+        - docker run -it -v "$PWD:/volume" xd009642/tarpaulin cargo tarpaulin
+            --all
+            --all-features
+            --ciserver travis-ci
+            --coveralls $TRAVIS_JOB_ID
+            --ignore-tests
