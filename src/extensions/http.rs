@@ -62,7 +62,9 @@ impl<T> HttpRouter<T> {
     fn insert(&mut self, method: Method, path: &str, t: T) {
         self.router.update(path, |node| {
             let mut map = node.unwrap_or_else(HashMap::new);
-            map.reserve(1);
+            if !map.contains_key(&method) {
+                map.reserve(1);
+            }
             map.insert(method, t);
             map
         });
