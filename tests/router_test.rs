@@ -5,15 +5,18 @@ pub mod router {
     fn basic_routing() {
         let mut router: Router<usize> = Router::new(vec![Box::new(StaticParser)]);
 
+        router.insert("/", 0);
         router.insert("/1", 1);
         router.insert("/2", 2);
         router.insert("/3", 3);
 
+        let n0 = router.lookup("/");
         let n1 = router.lookup("/1");
         let n2 = router.lookup("/2");
         let n3 = router.lookup("/3");
         let n4 = router.lookup("/4");
 
+        assert_eq!(n0, Some((&0, vec![])));
         assert_eq!(n1, Some((&1, vec![])));
         assert_eq!(n2, Some((&2, vec![])));
         assert_eq!(n3, Some((&3, vec![])));
