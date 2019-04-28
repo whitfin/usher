@@ -71,21 +71,22 @@ impl<T> Router<T> {
     /// first push something into it in most cases, so the performance hit is minimal.
     pub fn lookup<'a>(&'a self, path: &str) -> Option<(&T, Captures<'a>)> {
         let offset = path.as_ptr() as usize;
-        let mut current = None;
+        let mut current = &self.root;
         let mut captures = Vec::new();
 
         for segment in path.split('/').filter(|s| *s != "") {
-            current = current
-                .unwrap_or(&self.root)
+            let child = current
                 .children()
                 .iter()
                 .find(|child| child.matcher().is_match(segment));
 
-            if current.is_none() {
+            if child.is_none() {
                 break;
             }
 
-            let matcher = current.unwrap().matcher();
+            current = child.unwrap();
+
+            let matcher = current.matcher();
             let capture = matcher.capture(segment);
 
             if let Some((name, (start, end))) = capture {
@@ -96,9 +97,7 @@ impl<T> Router<T> {
             }
         }
 
-        current
-            .and_then(|node| node.value())
-            .map(|handler| (handler, captures))
+        current.value().map(|handler| (handler, captures))
     }
 
     /// Updates a leaf node inside a `Router`.
