@@ -75,16 +75,10 @@ impl<T> Router<T> {
         let mut captures = Vec::new();
 
         for segment in path.split('/').filter(|s| *s != "") {
-            let child = current
+            current = current
                 .children()
                 .iter()
-                .find(|child| child.matcher().is_match(segment));
-
-            if child.is_none() {
-                break;
-            }
-
-            current = child.unwrap();
+                .find(|child| child.matcher().is_match(segment))?;
 
             let matcher = current.matcher();
             let capture = matcher.capture(segment);
