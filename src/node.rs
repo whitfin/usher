@@ -23,13 +23,13 @@ use super::matcher::Matcher;
 /// most standard cases (as it depends on the allocator in use).
 pub struct Node<T> {
     value: Option<T>,
-    matcher: Box<Matcher>,
+    matcher: Box<dyn Matcher>,
     children: Vec<Node<T>>,
 }
 
 impl<T> Node<T> {
     /// Constructs a new `Node` from a literal.
-    pub(crate) fn new(matcher: Box<Matcher>) -> Self {
+    pub(crate) fn new(matcher: Box<dyn Matcher>) -> Self {
         Self {
             matcher,
             value: None,

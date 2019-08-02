@@ -24,12 +24,12 @@ use crate::parser::Parser;
 /// provided parsers. Always put the "strictest" parsers first in the vector.
 pub struct Router<T> {
     root: Node<T>,
-    parsers: Vec<Box<Parser>>,
+    parsers: Vec<Box<dyn Parser>>,
 }
 
 impl<T> Router<T> {
     /// Creates a new `Router`, using the provided matchers.
-    pub fn new(mut parsers: Vec<Box<Parser>>) -> Self {
+    pub fn new(mut parsers: Vec<Box<dyn Parser>>) -> Self {
         parsers.shrink_to_fit();
 
         let parsed = parse_segment(&parsers, "/");
@@ -135,6 +135,6 @@ impl<T> Router<T> {
 /// All provided parsers will be tested (in order) against the input segment to enable
 /// passing the most "specific" parsers earlier in the chain. In the case a `Matcher`
 /// is found, this function will short circuit and pass the first matcher back to the caller.
-fn parse_segment(parsers: &[Box<Parser>], segment: &str) -> Option<Box<Matcher>> {
+fn parse_segment(parsers: &[Box<dyn Parser>], segment: &str) -> Option<Box<dyn Matcher>> {
     parsers.iter().find_map(|parser| parser.parse(segment))
 }
