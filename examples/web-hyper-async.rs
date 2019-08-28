@@ -6,36 +6,44 @@ use usher::capture::find_capture;
 use usher::http::HttpRouter;
 use usher::prelude::*;
 
+use std::sync::Arc;
+
 /// This signature is borrowed from the Hyper "echo" example codebase.
-type BoxFut = Box<Future<Item = Response<Body>, Error = hyper::Error> + Send>;
+type BoxFut = Box<dyn Future<Item = Response<Body>, Error = hyper::Error> + Send>;
 
 /// Represents a boxed function which receives a request/params and returns a response future.
-type Callee = Box<Fn(Request<Body>, Vec<(&str, (usize, usize))>) -> BoxFut + Send + Sync>;
+type Callee = Box<dyn Fn(Request<Body>, Vec<(&str, (usize, usize))>) -> BoxFut + Send + Sync>;
 
 fn main() {
     // Create our address to bind to, localhost:3000
     let addr = ([127, 0, 0, 1], 3000).into();
 
+    // Just like in a normal Router, we provide our parsers at startup.
+    let mut router: HttpRouter<Callee> =
+        HttpRouter::new(vec![Box::new(DynamicParser), Box::new(StaticParser)]);
+
+    // This will echo the provided name back to the caller.
+    router.get(
+        "/:name",
+        Box::new(|req, params| {
+            let path = req.uri().path();
+            let name = find_capture(&path, &params, "name").unwrap();
+
+            let body = format!("Hello, {}!\n", name).into();
+            let resp = Response::new(body);
+
+            Box::new(future::ok(resp))
+        }),
+    );
+
+    // Wrap inside an Arc to avoid large clones.
+    let router = Arc::new(router);
+
     // Construct our Hyper server.
     let server = Server::bind(&addr)
-        .serve(|| {
-            // Just like in a normal Router, we provide our parsers at startup.
-            let mut router: HttpRouter<Callee> =
-                HttpRouter::new(vec![Box::new(DynamicParser), Box::new(StaticParser)]);
-
-            // This will echo the provided name back to the caller.
-            router.get(
-                "/:name",
-                Box::new(|req, params| {
-                    let path = req.uri().path();
-                    let name = find_capture(&path, &params, "name").unwrap();
-
-                    let body = format!("Hello, {}!\n", name).into();
-                    let resp = Response::new(body);
-
-                    Box::new(future::ok(resp))
-                }),
-            );
+        .serve(move || {
+            // We need a "clone" of the router.
+            let router = router.clone();
 
             // Construct a Hyper service from a function which turns a request
             // into an asynchronous response (which comes from echo()).
