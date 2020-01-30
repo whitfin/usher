@@ -8,9 +8,10 @@
 //! To activate this extension, use the `"web"` Cargo feature.
 use http::Method;
 
-#[cfg(not(feature = "hashbrown"))]
+#[cfg(not(feature = "hashbrownie"))]
 use std::collections::HashMap;
-#[cfg(feature = "hashbrown")]
+
+#[cfg(feature = "hashbrownie")]
 use hashbrown::HashMap;
 
 

@@ -16,10 +16,10 @@ travis-ci = { repository = "whitfin/usher" }
 [features]
 default = []
 web = ["http"]
-hashybrown = ["hashbrown"]
+hashbrownie = ["hashbrown"]
 
 [dependencies]
-http = { version = "0.1", optional = true }
+http = { version = "0.2", optional = true }
 hashbrown = { version = "0.6.3", optional = true }
 
 
@@ -29,12 +29,12 @@ hyper =  "0.12"
 
 [[example]]
 name = "web-basic"
-required-features = ["web"]
+required-features = ["web", "hashbrownie"]
 
 [[example]]
 name = "web-hyper-async"
-required-features = ["web"]
+required-features = ["web", "hashbrownie"]
 
 [[example]]
 name = "web-hyper-sync"
-required-features = ["web"]
+required-features = ["web", "hashbrownie"]
