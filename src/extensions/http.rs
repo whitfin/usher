@@ -8,7 +8,11 @@
 //! To activate this extension, use the `"web"` Cargo feature.
 use http::Method;
 
+#[cfg(not(feature = "hashbrown"))]
 use std::collections::HashMap;
+#[cfg(feature = "hashbrown")]
+use hashbrown::HashMap;
+
 
 use crate::capture::Captures;
 use crate::parser::Parser;
