@@ -1,6 +1,6 @@
 [package]
 name = "usher"
-version = "0.1.1" # remember to update html_root_url
+version = "0.2.0" # remember to update html_root_url
 authors = ["Isaac Whitfield <iw@whitfin.io>"]
 description = "Parameterized routing for generic resources in Rust"
 repository = "https://github.com/whitfin/usher"
