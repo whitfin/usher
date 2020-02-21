@@ -22,5 +22,14 @@ pub type CapturesRef<'a> = &'a [Capture<'a>];
 pub fn find_capture<'a, 'p>(path: &'p str, capt: CapturesRef<'a>, name: &str) -> Option<&'p str> {
     capt.iter()
         .find(|(n, _)| *n == name)
-        .map(|(_, bounds)| &path[(bounds.0)..(bounds.1)])
+        .map(|capt| lookup_capture(path, *capt))
+}
+
+/// Retrieves a captured value from a path.
+///
+/// This function will panic if the bounds provided are invalid for the provided path,
+/// although this should never happen in reality unless you're mocking captures.
+#[inline]
+pub fn lookup_capture<'a, 'p>(path: &'p str, capt: Capture<'a>) -> &'p str {
+    &path[((capt.1).0)..((capt.1).1)]
 }
