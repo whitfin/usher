@@ -41,7 +41,7 @@ macro_rules! http_delegate {
 
 impl<T> HttpRouter<T> {
     /// Creates a new `Router` with provided matchers.
-    pub fn new(parsers: Vec<Box<Parser>>) -> Self {
+    pub fn new(parsers: Vec<Box<dyn Parser>>) -> Self {
         Self {
             router: Router::new(parsers),
         }

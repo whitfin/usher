@@ -18,7 +18,7 @@ pub mod parser {
         assert!(create_static_matcher.parse("anything").is_some());
     }
 
-    fn create_static_matcher(input: &str) -> Option<Box<Matcher>> {
+    fn create_static_matcher(input: &str) -> Option<Box<dyn Matcher>> {
         Some(Box::new(StaticMatcher::new(input)))
     }
 }
