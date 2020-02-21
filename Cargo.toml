@@ -18,7 +18,7 @@ default = []
 web = ["http"]
 
 [dependencies]
-http = { version = "0.1", optional = true }
+http = { version = "0.2", optional = true }
 
 [dev-dependencies]
 futures = "0.1"
