@@ -74,7 +74,7 @@ impl<T> Router<T> {
         let mut current = &self.root;
         let mut captures = Vec::new();
 
-        for segment in path.split('/').filter(|s| *s != "") {
+        for segment in path.split('/').filter(|s| !s.is_empty()) {
             current = current
                 .children()
                 .iter()
@@ -105,7 +105,7 @@ impl<T> Router<T> {
     {
         let mut current = &mut self.root;
 
-        for segment in path.split('/').filter(|s| *s != "") {
+        for segment in path.split('/').filter(|s| !s.is_empty()) {
             let child = current
                 .children()
                 .iter()

@@ -5,8 +5,8 @@ pub mod matcher {
     fn static_matching() {
         let matcher = StaticMatcher::new("value");
 
-        assert_eq!(matcher.is_match("value"), true);
-        assert_eq!(matcher.is_match("not-value"), false);
+        assert!(matcher.is_match("value"));
+        assert!(!matcher.is_match("not-value"));
 
         assert_eq!(matcher.capture("value"), None);
         assert_eq!(matcher.capture("not-value"), None);
@@ -16,8 +16,8 @@ pub mod matcher {
     fn dynamic_matching() {
         let matcher = DynamicMatcher::new("field");
 
-        assert_eq!(matcher.is_match("value"), true);
-        assert_eq!(matcher.is_match("not-value"), true);
+        assert!(matcher.is_match("value"));
+        assert!(matcher.is_match("not-value"));
 
         assert_eq!(matcher.capture("value"), Some(("field", (0, 5))));
         assert_eq!(matcher.capture("not-value"), Some(("field", (0, 9))));
@@ -27,8 +27,8 @@ pub mod matcher {
     fn closure_matching() {
         let matcher = |input: &str| input == "value";
 
-        assert_eq!(matcher.is_match("value"), true);
-        assert_eq!(matcher.is_match("not-value"), false);
+        assert!(matcher.is_match("value"));
+        assert!(!matcher.is_match("not-value"));
 
         assert_eq!(matcher.capture("value"), None);
         assert_eq!(matcher.capture("not-value"), None);
