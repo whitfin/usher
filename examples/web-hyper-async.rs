@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         "/:name",
         Box::new(|req, params| {
             let path = req.uri().path();
-            let name = find_capture(&path, &params, "name").unwrap();
+            let name = find_capture(path, &params, "name").unwrap();
 
             let body = format!("Hello, {}!\n", name).into();
             let resp = Response::new(body);
