@@ -1,5 +1,5 @@
 //! Parameterized routing for generic resources in Rust.
-#![doc(html_root_url = "https://docs.rs/usher/0.1.1")]
+#![doc(html_root_url = "https://docs.rs/usher/0.2.1")]
 
 // exposed modules
 pub mod capture;
