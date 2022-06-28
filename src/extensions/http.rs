@@ -61,7 +61,7 @@ impl<T> HttpRouter<T> {
     /// Inserts a route/handler pair for the provided method and path.
     fn insert(&mut self, method: Method, path: &str, t: T) {
         self.router.update(path, |node| {
-            let mut map = node.unwrap_or_else(HashMap::new);
+            let mut map = node.unwrap_or_default();
             if !map.contains_key(&method) {
                 map.reserve(1);
             }
