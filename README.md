@@ -30,14 +30,14 @@ way to use it is to add an entry to your `Cargo.toml` defining the dependency:
 
 ```toml
 [dependencies]
-usher = "0.1"
+usher = "0.3"
 ```
 
 If you require any of the Usher extensions, you can opt into them by setting the
 feature flags in your dependency configuration:
 
 ```toml
-usher = { version = "0.1", features = ["web"] }
+usher = { version = "0.3", features = ["web"] }
 ```
 
 You can find the available extensions in the documentation.
