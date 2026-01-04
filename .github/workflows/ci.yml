@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Rust ${{ matrix.channel }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        channel:
+          - stable
+          - beta
+          - nightly
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.channel }}
+          components: clippy,rustfmt
+
+      - name: Run Build
+        run: cargo build
+
+      - name: Run Tests
+        run: cargo test
+
+      - name: Run Format
+        run: cargo fmt --all -- --check
+
+      - name: Run Clippy
+        run: cargo clippy --all --all-features --profile test
+

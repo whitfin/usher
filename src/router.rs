@@ -69,7 +69,7 @@ impl<T> Router<T> {
     /// If a route does not require any parameters, this vector is still returned but
     /// is empty. This isn't a big deal; a `Vec` will only allocate memory when you
     /// first push something into it in most cases, so the performance hit is minimal.
-    pub fn lookup<'a>(&'a self, path: &str) -> Option<(&T, Captures<'a>)> {
+    pub fn lookup<'a>(&'a self, path: &str) -> Option<(&'a T, Captures<'a>)> {
         let offset = path.as_ptr() as usize;
         let mut current = &self.root;
         let mut captures = Vec::new();
